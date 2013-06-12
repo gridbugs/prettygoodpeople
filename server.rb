@@ -35,8 +35,12 @@ post '/add-user' do
   username = params[:username]
   password = params[:password]
   publickey = params[:publickey]
-
-  puts User.create(:username => username, :password => password, :publickey => publickey)
+  begin
+    puts User.create(:username => username, :password => password, :publickey => publickey)
+    return "0"
+  rescue
+    return "1"
+  end
 end
 
 post '/remove-user' do

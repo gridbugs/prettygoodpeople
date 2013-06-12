@@ -46,21 +46,29 @@ $(function() {
     }
 
     function transmit_user_data(data) {
-       $.post(server_url + 'add-user',
-       {password: data.passwordHash, publickey: data.publicKey, username: data.userName},
-       // {password: data.passwordHash, publickey: data.publicKey, username: data.userName},
-                function() {console.debug("Done")});
+        console.debug("Uploading...");
+        $.post(server_url + 'add-user', 
+            {password: data.passwordHash, publickey: data.publicKey, username: data.userName},
+            function(success) {
+                if (success == "0") {
+                    store_private_key(data);
+                } else {
+                    console.log("User exists");
+                }
+            }
+        );
     }
 
     function store_private_key(data) {
-        eval("localStorage." + data.userName + " = data.privateKey");
+        var a = "localStorage." + data.userName + " = data.privateKey";
+        console.debug(a);
+        eval(a);
     }
 
     $('#sign-up')[0].onclick = function() {
         if ($('#password').val() == $('#repeat-password').val()) {
             var userData = gen();
             transmit_user_data(userData);
-            store_private_key(userData);
         } else {
             console.log("Passwords do not match");
         }
