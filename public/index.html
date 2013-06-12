@@ -52,11 +52,15 @@ $(function() {
                 function() {console.debug("Done")});
     }
 
-    $('#sign-up')[0].onclick = function(){
+    function store_private_key(data) {
+        eval("localStorage." + data.userName + " = data.privateKey");
+    }
+
+    $('#sign-up')[0].onclick = function() {
         if ($('#password').val() == $('#repeat-password').val()) {
             var userData = gen();
             transmit_user_data(userData);
-
+            store_private_key(userData);
         } else {
             console.log("Passwords do not match");
         }

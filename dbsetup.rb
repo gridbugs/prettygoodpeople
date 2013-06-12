@@ -1,5 +1,5 @@
 load 'models.rb'
-require 'dm-migrations'
+require 'data_mapper'
 
 DataMapper::Logger.new($stdout, :debug)
 DataMapper.setup(:default, 'mysql://steve@localhost/test')

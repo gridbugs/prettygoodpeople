@@ -1,8 +1,17 @@
 require 'rubygems'
 require 'sinatra'
+require 'data_mapper'
+
 
 set :bind, 'localhost'
 set :port, 4567
+
+# connect to database
+DataMapper::Logger.new($stdout, :debug)
+DataMapper.setup(:default, 'mysql://steve@localhost/test')
+load 'models.rb'
+
+DataMapper::Model.raise_on_save_failure = true 
 
 # non-kernel calls
 get '/' do
@@ -27,9 +36,7 @@ post '/add-user' do
   password = params[:password]
   publickey = params[:publickey]
 
-  puts username
-  puts password
-  puts publickey
+  puts User.create(:username => username, :password => password, :publickey => publickey)
 end
 
 post '/remove-user' do

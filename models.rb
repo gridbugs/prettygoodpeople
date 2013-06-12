@@ -1,11 +1,11 @@
 require 'rubygems'
-require 'dm-core'
+require 'data_mapper'
 
 class User
   include DataMapper::Resource
   property :id, Serial
   property :username, String, :unique => true, :required => true
-  property :publickey, String, :required => true
+  property :publickey, Text, :required => true
   property :password, String, :required => true
 
   has n, :messages
@@ -19,3 +19,5 @@ class Message
 
   belongs_to :user
 end
+
+DataMapper.finalize
