@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="openpgpjs/resources/jquery.min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+<script src="client.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+<script type="text/javascript">
+
+$(function() {
+ 
+    function cached_userdata(username) {
+        var data = JSON.parse(eval("localStorage." + username));
+        return data;
+    }
+
+    function login(data) {
+        localStorage.currentUserData = JSON.stringify(data);
+        window.location = "send-message.html";
+    }
+
+
+    $('#login')[0].onclick = function() {
+        var username = $('#user-name').val();
+        var data = cached_userdata(username);
+        if (data == undefined) {
+            console.debug("User doesn't exist");
+        } else {
+            login(data);
+        }
+    }
+});
+</script>
+
+</head>
+<body>
+
+<label>User Name:</label>
+<input type=text id='user-name'>
+
+<input type=button value='Login' id='login'>
+
+</body>
+</html>

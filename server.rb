@@ -20,6 +20,9 @@ end
 
 # kernel calls
 get '/get-public-key' do
+  username = params[:username]
+  user = User.get(:username => username)
+  puts user
 end
 
 post '/update-public-key' do
@@ -36,7 +39,7 @@ post '/add-user' do
   password = params[:password]
   publickey = params[:publickey]
   begin
-    puts User.create(:username => username, :password => password, :publickey => publickey)
+    User.create(:username => username, :password => password, :publickey => publickey)
     return "0"
   rescue
     return "1"
@@ -47,6 +50,14 @@ post '/remove-user' do
 end
 
 post '/send-message' do
+  recipient = params[:recipient]
+  body = params[:body]
+  begin
+    Message.create(:recipient => recipient, :body => body)
+    return "0"
+  rescue
+    return "1"
+  end
 end
 
 post '/remove-user' do

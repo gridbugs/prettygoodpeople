@@ -22,6 +22,17 @@
         charset="utf-8">
 </script>
 
+<script src="client.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+<script src="profile.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+
+
 <script type="text/javascript">
 openpgp.init();
 
@@ -34,22 +45,18 @@ $(function() {
         $('#priv').html(pair.privateKeyArmored);
         $('#pub').html(pair.publicKeyArmored);
 
-        var passwordHash = CryptoJS.MD5($('#password').val()).toString();
-        $('#password-hash').html("Password: " + passwordHash);
-
-        return {userName: $('#user-name').val(),
-                passwordHash: passwordHash,
-                publicKey: pair.publicKeyArmored,
-                privateKey: pair.privateKeyArmored};
+        var p = $P($('#user-name').val(), pair.privateKeyArmored, pair.publicKeyArmored, $('#password').val());
+        $('#password-hash').html("Password: " + p);
+        return p;
     }
 
     function transmit_user_data(data) {
         console.debug("Uploading...");
         $.post(server_url + 'add-user', 
-            {password: data.passwordHash, publickey: data.publicKey, username: data.userName},
+            {password: data.password_hash, publickey: data.public_key, username: data.username},
             function(success) {
                 if (success == "0") {
-                    store_private_key(data);
+                    store_user_data(data);
                 } else {
                     console.log("User exists");
                 }
@@ -57,9 +64,8 @@ $(function() {
         );
     }
 
-    function store_private_key(data) {
-        var a = "localStorage." + data.userName + " = data.privateKey";
-        console.debug(a);
+    function store_user_data(data) {
+        var a = "localStorage." + data.username + " = JSON.stringify(data)";
         eval(a);
     }
 
@@ -75,11 +81,6 @@ $(function() {
 
 
 
-</script>
-
-<script src="client.js"
-        type="text/javascript"
-        charset="utf-8">
 </script>
 
 </head>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="cryptjs/components/core-min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+<script src="cryptjs/components/md5-min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+
+<script src="openpgpjs/resources/openpgp.min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+<script src="openpgpjs/resources/jquery.min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+<script type="text/javascript">
+openpgp.init();
+
+$(function() {
+    console.debug(localStorage.currentUserData);
+    var current_user_data = JSON.parse(localStorage.currentUserData);
+    console.debug(current_user_data);
+
+});
+
+
+
+</script>
+
+<script src="client.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+</head>
+<body>
+
+<label>Recipient Address:</label>
+<input type=text id='recipient-address'>
+
+<label>Message Body:</label>
+<textarea id='message-body'></textarea>
+
+<input type=button value='Send' id='send'>
+</body>
+</html>

@@ -1,5 +1,10 @@
 
 var server_url = "http://localhost:4567/";
+
+if (localStorage.profiles == undefined) {
+    localStorage.profiles = [];
+}
+
 function en() {
     var key = openpgp.read_publicKey($('#key').val());
     console.debug(key);
