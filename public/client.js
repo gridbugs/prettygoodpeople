@@ -5,6 +5,7 @@ if (localStorage.profiles == undefined) {
     localStorage.profiles = [];
 }
 
+
 function en(public_key, plaintext) {
     var key = openpgp.read_publicKey(public_key);
     console.debug(key);
@@ -12,9 +13,9 @@ function en(public_key, plaintext) {
     return cyphertext;
 }
 
-function de() {
-    var priv_key = openpgp.read_privateKey($('#private-key').val());
-    var msg = openpgp.read_message($('#cyphertext').val());
+function de(private_key_str, password, msg_str) {
+    var priv_key = openpgp.read_privateKey(private_key_str);
+    var msg = openpgp.read_message(msg_str);
 
     var keymat = null;
     var sesskey = null;
@@ -34,17 +35,17 @@ function de() {
         }
     }
     if (keymat != null) {
-        if (!keymat.keymaterial.decryptSecretMPIs('Y3llowT4xi.13')) {
+        if (!keymat.keymaterial.decryptSecretMPIs(password)) {
             console.debug("Password for secret key was incorrect!");
             return;
 
         }
-        $('#decrypted').text(msg[0].decrypt(keymat, sesskey));
+        return msg[0].decrypt(keymat, sesskey);
     } else {
         console.debug("No private key found!");
     }
 
-    return msg;
+    return "error";
 }
 
 

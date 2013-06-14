@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'data_mapper'
+require 'json'
 
 class User
   include DataMapper::Resource
@@ -9,6 +10,15 @@ class User
   property :password, String, :required => true
 
   has n, :messages
+
+  def to_json(*a)
+    {
+      :id => id,
+      :username => username,
+      :publickey => publickey,
+      :password => password
+    }.to_json(*a)
+  end
 end
 
 class Message

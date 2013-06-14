@@ -1,10 +1,12 @@
 require 'rubygems'
 require 'sinatra'
 require 'data_mapper'
-
+require 'json'
 
 set :bind, 'localhost'
 set :port, 4567
+
+enable :sessions
 
 # connect to database
 DataMapper::Logger.new($stdout, :debug)
@@ -18,23 +20,37 @@ get '/' do
   redirect '/index.html'
 end
 
+post '/login' do
+  user = User.first(:username => params[:username])
+  if user.password == params[:password] then
+    session[:user] = user
+    return "0"
+  else
+    return "1"
+  end
+end
+
 # kernel calls
 get '/get-public-key' do
   username = params[:username]
   user = User.first(:username => username)
-  publickey = user.publickey.gsub(%r{\n}, "\\n").gsub(%r{\r}, "\\r")
-  a = '{"id": "' << user.id.to_s << '", "publickey": "' << publickey << '"}'
-  puts a
-  return a
+  {
+    :id => user.id,
+    :publickey => user.publickey
+  }.to_json
 end
 
 post '/update-public-key' do
 end
 
 get '/get-messages' do
+  count = params[:count].to_i
+  Message.all(:limit => count, :user_id => session[:user].id).to_json
+
 end
 
 get '/get-message-count' do
+  Message.count(:user_id => session[:user].id).to_s
 end
 
 post '/add-user' do
