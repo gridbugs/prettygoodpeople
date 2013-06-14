@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="cryptjs/components/core-min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+<script src="cryptjs/components/md5-min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+
+<script src="openpgpjs/resources/openpgp.min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+<script src="openpgpjs/resources/jquery.min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+<script type="text/javascript">
+
+function count_messages(f) {
+    $.get(server_url + "get-message-count", {},
+    function(n_str) {
+        var n = parseInt(n_str);
+        f(n);
+    });
+}
+
+
+$(function() {
+    openpgp.init();
+    console.debug(localStorage.currentUserData);
+    var current_user_data = JSON.parse(localStorage.currentUserData);
+    console.debug(current_user_data);
+
+    count_messages(
+    function(n) {
+        $.get(server_url + "get-messages", {count: n},
+        function(messages_json) {
+            var messages = JSON.parse(messages_json);
+            var plaintext = messages.map(function(message) {
+                return de(current_user_data.private_key,
+                          current_user_data.password,
+                          message.body);
+            });
+            for (var i in plaintext) {
+                $('#messages').append('<tr><td><pre>' + i + '</pre></td><td><pre>' + plaintext[i] + '</pre></td></tr>');
+            }
+        });
+    }
+    );
+
+});
+
+
+
+</script>
+
+<script src="client.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
+</head>
+<body>
+
+<h2>Messages</h2>
+<table id='messages' border=1>
+</table>
+</body>
+</html>
