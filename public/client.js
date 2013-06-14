@@ -5,11 +5,11 @@ if (localStorage.profiles == undefined) {
     localStorage.profiles = [];
 }
 
-function en() {
-    var key = openpgp.read_publicKey($('#key').val());
+function en(public_key, plaintext) {
+    var key = openpgp.read_publicKey(public_key);
     console.debug(key);
-    var cyphertext = openpgp.write_encrypted_message(key, $('#message').val());
-    $('#cyphertext').val(cyphertext);
+    var cyphertext = openpgp.write_encrypted_message(key, plaintext);
+    return cyphertext;
 }
 
 function de() {

@@ -30,6 +30,31 @@ $(function() {
     var current_user_data = JSON.parse(localStorage.currentUserData);
     console.debug(current_user_data);
 
+
+    $('#send')[0].onclick = function() {
+        $.get(server_url + 'get-public-key', {username: $('#recipient-address').val()},
+            function(json_key) {
+                console.debug(json_key);
+                var key = JSON.parse(json_key);
+                console.debug(key.publickey);
+                var cyphertext = en(key.publickey, $('#message-body').val());
+                $('#cyphertext').html(cyphertext);
+                $.post(server_url + 'send-message', 
+                    {
+                        user_id: key.id,
+                        body: cyphertext
+                    }, function(success) {
+                        if (success == "0") {
+                            console.debug("Success");
+                        } else {
+                            console.debug("Failure");
+                        }
+                    }
+                    );
+            });
+    };
+
+
 });
 
 
@@ -51,5 +76,6 @@ $(function() {
 <textarea id='message-body'></textarea>
 
 <input type=button value='Send' id='send'>
+<pre id='cyphertext' style='font-family:monospace'></pre>
 </body>
 </html>

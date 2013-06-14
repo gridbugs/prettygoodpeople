@@ -15,7 +15,6 @@ class Message
   include DataMapper::Resource
   property :id, Serial
   property :body, Text, :required => true
-  property :recipient, Integer, :required => true
 
   belongs_to :user
 end

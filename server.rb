@@ -21,8 +21,11 @@ end
 # kernel calls
 get '/get-public-key' do
   username = params[:username]
-  user = User.get(:username => username)
-  puts user
+  user = User.first(:username => username)
+  publickey = user.publickey.gsub(%r{\n}, "\\n").gsub(%r{\r}, "\\r")
+  a = '{"id": "' << user.id.to_s << '", "publickey": "' << publickey << '"}'
+  puts a
+  return a
 end
 
 post '/update-public-key' do
@@ -50,10 +53,10 @@ post '/remove-user' do
 end
 
 post '/send-message' do
-  recipient = params[:recipient]
+  user_id = params[:user_id]
   body = params[:body]
   begin
-    Message.create(:recipient => recipient, :body => body)
+    Message.create(:user_id => user_id, :body => body)
     return "0"
   rescue
     return "1"
