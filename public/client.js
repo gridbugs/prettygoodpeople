@@ -1,5 +1,4 @@
 
-var server_url = "http://localhost:4567/";
 
 if (localStorage.profiles == undefined) {
     localStorage.profiles = [];
