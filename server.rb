@@ -3,14 +3,13 @@ require 'sinatra'
 require 'data_mapper'
 require 'json'
 
-set :bind, 'localhost'
-set :port, 4567
+load 'config.rb'
 
 enable :sessions
 
 # connect to database
 DataMapper::Logger.new($stdout, :debug)
-DataMapper.setup(:default, 'mysql://steve@localhost/test')
+load 'connect.rb'
 load 'models.rb'
 
 DataMapper::Model.raise_on_save_failure = true 
