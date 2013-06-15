@@ -49,6 +49,7 @@ $(function() {
         function(messages_json) {
             var messages = JSON.parse(messages_json);
             var plaintext = messages.map(function(message) {
+                console.debug("decrypting");
                 return de(current_user_data.private_key,
                           current_user_data.password,
                           message.body);

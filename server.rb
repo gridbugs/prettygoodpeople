@@ -39,6 +39,17 @@ get '/get-public-key' do
   }.to_json
 end
 
+get '/get-public-key-array' do
+  usernames = JSON.parse(params[:username_array])
+  usernames.map { |u| 
+    user = User.first(:username => u)
+    {
+      :id => user.id,
+      :publickey => user.publickey
+    }
+  }.to_json
+end
+
 post '/update-public-key' do
 end
 
@@ -76,6 +87,18 @@ post '/send-message' do
   rescue
     return "1"
   end
+end
+
+post '/send-multiple-messages' do
+  messages = JSON.parse(params[:message_array])
+  puts "------------------"
+  puts messages[0]
+  a = messages.map { |m|
+    message = Message.create(:user_id => m["user_id"].to_i, :body => m["body"])
+    message.id
+  }.to_json
+  puts a
+  return a
 end
 
 post '/remove-user' do

@@ -2,6 +2,12 @@
 <html>
 <head>
 
+
+<script src="openpgpjs/resources/openpgp.min.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+
 <script src="cryptjs/components/core-min.js"
         type="text/javascript"
         charset="utf-8">
@@ -23,6 +29,14 @@
         charset="utf-8">
 </script>
 
+<script src="api.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+<script src="message.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
 <script src="client.js"
         type="text/javascript"
         charset="utf-8">
@@ -31,7 +45,9 @@
 <script type="text/javascript">
 
 $(function() {
- 
+
+    openpgp.init();
+
     function cached_userdata(username) {
         var data = JSON.parse(eval("localStorage." + username));
         return data;

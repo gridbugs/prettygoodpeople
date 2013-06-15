@@ -7,14 +7,18 @@ if (localStorage.profiles == undefined) {
 
 function en(public_key, plaintext) {
     var key = openpgp.read_publicKey(public_key);
-    console.debug(key);
     var cyphertext = openpgp.write_encrypted_message(key, plaintext);
     return cyphertext;
 }
 
 function de(private_key_str, password, msg_str) {
     var priv_key = openpgp.read_privateKey(private_key_str);
-    var msg = openpgp.read_message(msg_str);
+    try {
+        var msg = openpgp.read_message(msg_str);
+    } catch (err) {
+        console.debug("plaintext message");
+        return msg_str;
+    }
 
     var keymat = null;
     var sesskey = null;
