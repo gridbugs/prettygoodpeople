@@ -14,6 +14,9 @@ load 'models.rb'
 
 DataMapper::Model.raise_on_save_failure = true 
 
+load 'templates.rb'
+load_templates()
+
 # non-kernel calls
 get '/' do
   redirect '/index.html'
@@ -102,4 +105,17 @@ post '/send-multiple-messages' do
 end
 
 post '/remove-user' do
+end
+
+get %r{(.*)} do
+  puts $templates
+  puts $templates.keys
+  params[:captures].first =~ /\/(.*)/
+  page = $1
+  puts page
+  if $templates.has_key?(page) then
+    page
+  else
+    "404"
+  end
 end
