@@ -2,7 +2,15 @@
 <html>
 <head>
 
+<script src="message.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
 <script src="config.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
+<script src="api.js"
         type="text/javascript"
         charset="utf-8">
 </script>
@@ -25,6 +33,10 @@
         type="text/javascript"
         charset="utf-8">
 </script>
+<script src="client.js"
+        type="text/javascript"
+        charset="utf-8">
+</script>
 
 <script type="text/javascript">
 
@@ -36,12 +48,26 @@ function count_messages(f) {
     });
 }
 
+function showMessages(str) {
+    var parser = new DOMParser();
+    var xmlDoc = parser.parseFromString(str, "text/xml");
+    var body = xmlDoc.childNodes[0].childNodes[1].textContent;
+
+    if (body.match(/Found Good Signature/)) {
+        global_signature_verified = true;
+    } else {
+        global_signature_verified = false;
+    }
+
+    //console.debug(body);
+}
+
+var global_signature_verified = false;
 
 $(function() {
+
     openpgp.init();
-    console.debug(localStorage.currentUserData);
     var current_user_data = JSON.parse(localStorage.currentUserData);
-    console.debug(current_user_data);
 
     count_messages(
     function(n) {
@@ -49,13 +75,43 @@ $(function() {
         function(messages_json) {
             var messages = JSON.parse(messages_json);
             var plaintext = messages.map(function(message) {
-                console.debug("decrypting");
                 return de(current_user_data.private_key,
                           current_user_data.password,
                           message.body);
             });
             for (var i in plaintext) {
-                $('#messages').append('<tr><td><pre>' + i + '</pre></td><td><pre>' + plaintext[i] + '</pre></td></tr>');
+                var obj = JSON.parse(plaintext[i]);
+                var verified = false;
+                if (obj.signature != undefined) {
+                    get_public_key(obj.sender, function(id, publickey, extra) {
+                        var i = extra[0];
+                        var obj = extra[1];
+                        /*
+                        console.debug(obj.sender);
+                        console.debug(publickey);
+                        console.debug(current_user_data.private_key);
+                        console.debug(obj.signature);
+                        */
+                        verified = de(current_user_data.private_key, current_user_data.password,
+                           obj.signature, publickey);
+                        var verified_string;
+                        if (verified) {
+                            verified_string = "Signature Verified";
+                        } else {
+                            verified_string = "Signature Invalid";
+                        }
+                        $('#verified'+i).html(verified_string);
+                    }, [i, obj]);
+                }
+                var vefified_string;
+                if (obj.signature == undefined) {
+                    verified_string = "Not Signed";
+                } else {
+                    verified_string = "Verifying...";
+                }
+                $('#messages').append('<tr><td>' + i + '</td><td>' + obj.type +
+                    '</td><td>' + obj.sender +
+                    '</td><td>' + obj.body + '</td><td id="verified' + i + '">'+verified_string+'</td></tr>');
             }
         });
     }
@@ -77,6 +133,7 @@ $(function() {
 
 <h2>Messages</h2>
 <table id='messages' border=1>
+<tr><th>Index</th><th>Type</th><th>Sender</th><th>Message</th><th>Signature</th></tr>
 </table>
 </body>
 </html>

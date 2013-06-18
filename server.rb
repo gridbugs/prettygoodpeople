@@ -107,15 +107,3 @@ end
 post '/remove-user' do
 end
 
-get %r{(.*)} do
-  puts $templates
-  puts $templates.keys
-  params[:captures].first =~ /\/(.*)/
-  page = $1
-  puts page
-  if $templates.has_key?(page) then
-    page
-  else
-    "404"
-  end
-end
