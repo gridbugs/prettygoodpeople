@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'data_mapper'
 require 'json'
+require 'securerandom'
 
 load 'config.rb'
 
@@ -17,11 +18,12 @@ DataMapper::Model.raise_on_save_failure = true
 load 'templates.rb'
 load_templates()
 
-# non-kernel calls
-get '/' do
-  redirect '/index.html'
+$unique = 0
+get '/uuid' do
+  SecureRandom.uuid
 end
 
+# non-kernel calls
 post '/login' do
   user = User.first(:username => params[:username])
   if user.password == params[:password] then
