@@ -35,4 +35,9 @@ function send_multiple_messages(message_array, callback) {
     });
 }
 
-
+function with_uuid(callback) {
+    $.get(server_url + 'uuid', {},
+    function(uuid) {
+        callback(uuid);
+    });
+}

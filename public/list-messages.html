@@ -82,8 +82,9 @@ $(function() {
             for (var i in plaintext) {
                 var obj = JSON.parse(plaintext[i]);
                 var verified = false;
+//                console.debug(obj.message);
                 if (obj.signature != undefined) {
-                    get_public_key(obj.sender, function(id, publickey, extra) {
+                    get_public_key(obj.message.sender, function(id, publickey, extra) {
                         var i = extra[0];
                         var obj = extra[1];
                         /*
@@ -92,8 +93,10 @@ $(function() {
                         console.debug(current_user_data.private_key);
                         console.debug(obj.signature);
                         */
-                        verified = de(current_user_data.private_key, current_user_data.password,
+                        var result = de(current_user_data.private_key, current_user_data.password,
                            obj.signature, publickey);
+//                        console.debug(result.text);
+                        verified = JSON.stringify(obj.message) == result.text && result.verified;
                         var verified_string;
                         if (verified) {
                             verified_string = "Signature Verified";
@@ -109,9 +112,9 @@ $(function() {
                 } else {
                     verified_string = "Verifying...";
                 }
-                $('#messages').append('<tr><td>' + i + '</td><td>' + obj.type +
-                    '</td><td>' + obj.sender +
-                    '</td><td>' + obj.body + '</td><td id="verified' + i + '">'+verified_string+'</td></tr>');
+                $('#messages').append('<tr><td>' + i + '</td><td>' + obj.message.type +
+                    '</td><td>' + obj.message.sender +
+                    '</td><td>' + obj.message.body + '</td><td id="verified' + i + '">'+verified_string+'</td></tr>');
             }
         });
     }

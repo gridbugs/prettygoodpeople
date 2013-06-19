@@ -72,7 +72,7 @@ function de(private_key_str, password, msg_str, public_key_str) {
         }
         var a = msg[0].decrypt(keymat, sesskey);
         if (public_key_str != undefined) {
-            return global_signature_verified;
+            return {text: a, verified: global_signature_verified};
         } else {
             return a;
         }
