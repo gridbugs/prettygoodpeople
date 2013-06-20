@@ -59,7 +59,6 @@ function showMessages(str) {
         global_signature_verified = false;
     }
 
-    //console.debug(body);
 }
 
 var global_signature_verified = false;
@@ -75,28 +74,23 @@ $(function() {
         function(messages_json) {
             var messages = JSON.parse(messages_json);
             var plaintext = messages.map(function(message) {
-                return de(current_user_data.private_key,
+                var p = de(current_user_data.private_key,
                           current_user_data.password,
                           message.body);
+                var o = JSON.parse(p);
+                return p;
             });
             for (var i in plaintext) {
                 var obj = JSON.parse(plaintext[i]);
                 var verified = false;
-//                console.debug(obj.message);
                 if (obj.signature != undefined) {
                     get_public_key(obj.message.sender, function(id, publickey, extra) {
                         var i = extra[0];
                         var obj = extra[1];
-                        /*
-                        console.debug(obj.sender);
-                        console.debug(publickey);
-                        console.debug(current_user_data.private_key);
-                        console.debug(obj.signature);
-                        */
+                        
                         var result = de(current_user_data.private_key, current_user_data.password,
                            obj.signature, publickey);
-//                        console.debug(result.text);
-                        verified = JSON.stringify(obj.message) == result.text && result.verified;
+                        verified = CryptoJS.MD5(JSON.stringify(obj.message)).toString() == result.text && result.verified;
                         var verified_string;
                         if (verified) {
                             verified_string = "Signature Verified";

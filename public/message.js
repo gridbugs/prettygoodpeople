@@ -1,3 +1,11 @@
+function Com(message, encrypt_key) {
+    var message_str = JSON.stringify(message);
+    this.message = message;
+    this.signature = sign_and_en(current_user_data.private_key,
+                                            encrypt_key,
+                                            CryptoJS.MD5(message_str).toString());
+}
+
 function Broadcast(sender, recipients, plaintext) {
     this.sender = sender;
     this.recipients = recipients;
@@ -23,14 +31,11 @@ Broadcast.prototype.send = function() {
 
                 return en(user.publickey, JSON.stringify(message));
             });
-            console.debug(cyphertext);
 
             var to_send = [];
-            console.debug(broadcast);
             for (var i in broadcast.recipients) {
                 to_send[i] = {user_id: data[i].id, body: cyphertext[i]};
             }
-            console.debug(to_send);
             send_multiple_messages(to_send, function(message_id_array) {
                 console.debug(message_id_array);
             });
@@ -45,41 +50,31 @@ function DirectMessage(sender, recipient, plaintext) {
     this.plaintext = plaintext;
 }
 
+DirectMessage.prototype.format = function(uuid) {
+    return {
+        uuid: uuid,
+        type: "personal-message",
+        sender: this.sender,
+        recipient: this.recipient,
+        body: this.plaintext
+    };
+}
+
 DirectMessage.prototype.send = function() {
     var direct_message = this;
-    
+
     with_uuid(function(uuid) {
 
-        var message = {
-            type: "personal-message",
-            uuid: uuid,
-            sender: direct_message.sender,
-            recipient: direct_message.recipient,
-            body: direct_message.plaintext
-        };
+        var message = direct_message.format(uuid);
 
-        var message_copy = {
-            type: "personal-message-sender-copy",
-            uuid: uuid,
-            sender: direct_message.sender,
-            recipient: direct_message.recipient,
-            body: direct_message.plaintext
-        };
-        
+        var message_copy = direct_message.format(uuid);
+        message_copy.type = "personal-message-sender-copy";
+
         get_public_key_array([direct_message.recipient, direct_message.sender], function(data) {
             message_str = JSON.stringify(message);
             message_copy_str = JSON.stringify(message_copy);
-            var packet = {message: message,
-                          signature: sign_and_en(current_user_data.private_key,
-                                            data[0].publickey,
-                                            message_str)
-                         };
-            var packet_copy = {message: message_copy,
-                               signature: sign_and_en(current_user_data.private_key,
-                                                 data[1].publickey,
-                                                 message_copy_str)
-                                };
-
+            var packet = new Com(message, data[0].publickey);
+            var packet_copy = new Com(message, data[1].publickey);
             send_multiple_messages([
                 {user_id: data[0].id, body: en(data[0].publickey, JSON.stringify(packet))},
                 {user_id: data[1].id, body: en(data[1].publickey, JSON.stringify(packet_copy))}
@@ -92,7 +87,7 @@ DirectMessage.prototype.send = function() {
 }
 
 function test2() {
-    new DirectMessage("user1", "user2", "It is a good day, isn't it.").send();
+    new DirectMessage("user1", "user3", "user1 to user3").send();
 }
 
 function test1() {
